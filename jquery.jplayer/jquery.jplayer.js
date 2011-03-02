@@ -264,6 +264,7 @@
 			srcSet: false,
 			video: false, // True if playing a video
 			seekPercent: 0,
+			bufferedPercent: 0,
 			currentPercentRelative: 0,
 			currentPercentAbsolute: 0,
 			currentTime: 0,
@@ -777,17 +778,22 @@
 			});
 		},
 		_getHtmlStatus: function(media, override) {
-			var ct = 0, d = 0, cpa = 0, sp = 0, cpr = 0;
+			var ct = 0, d = 0, cpa = 0, sp = 0, bp = 0, cpr = 0;
 			
 			ct = media.currentTime;
 			cpa = (this.status.duration > 0) ? 100 * ct / this.status.duration : 0;
+			
 			if((typeof media.seekable === "object") && (media.seekable.length > 0)) {
 				sp = (this.status.duration > 0) ? 100 * media.seekable.end(media.seekable.length-1) / this.status.duration : 100;
 				cpr = 100 * media.currentTime / media.seekable.end(media.seekable.length-1);
 			} else {
 				sp = 100;
 				cpr = cpa;
-			}
+			} 
+			
+		    if((typeof media.buffered === "object") && (media.buffered.length > 0)) {
+				bp = (this.status.duration > 0) ? 100 * media.buffered.end(media.buffered.length-1) / this.status.duration : 100;
+			}			
 			
 			if(override) {
 				ct = 0;
@@ -796,6 +802,7 @@
 			}
 
 			this.status.seekPercent = sp;
+			this.status.bufferedPercent = bp;
 			this.status.currentPercentRelative = cpr;
 			this.status.currentPercentAbsolute = cpa;
 			this.status.currentTime = ct;
